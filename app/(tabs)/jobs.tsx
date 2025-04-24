@@ -2,7 +2,7 @@ import {Text,View} from "react-native";
 const Index = () => { 
 return (
     <View>
-        <Text>Hello</Text>
+        <Text className="text-4xl">Jobs Section</Text>
     </View>
 );
 
