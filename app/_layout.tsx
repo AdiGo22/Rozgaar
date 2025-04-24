@@ -10,7 +10,7 @@ export default function RootLayout () {
      //this allowss to hide header shown 
     />
     <Stack.Screen
-    name = "jobs/[id]"
+    name = "job/[id]"
     options = {{headerShown : false}}
      />
   
