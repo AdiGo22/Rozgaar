@@ -3,8 +3,12 @@ import { fetchJobs } from "@/services/api";
 import { useEffect, useState } from "react";
 import { ActivityIndicator, FlatList } from "react-native";
 import { View,Text } from "react-native";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useRouter } from "expo-router";
 
 const Index = () => {
+  const router = useRouter();
+
     const[jobs,setJobs] = useState<any[]>([]);
     const[page,setPage] = useState(1);
     const[hasMore,setHasMore] = useState(true);
@@ -44,6 +48,23 @@ const Index = () => {
             loadJobs(page);
         }
     }
+
+    
+      //identify the item of the particular card pressed.
+      //saving that item to the local storage.
+    const handleCardPressed = async (item: any) => {
+      try {
+        // Save ENTIRE item object with unique key
+        await AsyncStorage.setItem(
+          `@JobCard_${item.id}`, 
+          JSON.stringify(item)
+        );
+       
+        router.push(`/job/${item.id}`);
+      } catch (e) {
+        console.error("Saving failed:", e);
+      }
+    };
     return (
         <View style={{ flex: 1 }}>
           <Text>Rozgaar</Text>
@@ -52,15 +73,20 @@ const Index = () => {
           <FlatList
             data={jobs}
             keyExtractor={(item, index) => item.id?.toString() || index.toString()}
-            renderItem={({ item }) => (
-              <JobCard
-                id = {item?.id}
-                title={item?.title}
-                location={item.primary_details?.Place}
-                salary={item.primary_details?.Salary}
-                phonedata={item?.custom_link}
-              />
-            )}
+            renderItem={({ item }) => {
+           
+              return (
+                <JobCard
+                  {...item}
+                  id = {item?.id}
+                  title={item?.title}
+                  location={item.primary_details?.Place}
+                  salary={item.primary_details?.Salary}
+                  phonedata={item?.custom_link}
+                  onPress = {() => handleCardPressed(item)}
+                />
+              );
+            }}
             onEndReached={handleEndReached}
             onEndReachedThreshold={0.5}
             ListFooterComponent={renderFooter}

@@ -3,7 +3,7 @@ import { Text, TouchableOpacity, View, Animated, Easing } from 'react-native';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useEffect, useRef, useState } from 'react';
 
-const JobCard = ({ id,title, location, salary, phonedata }: any) => {
+const JobCard = ({ id,title, location, salary, phonedata ,onPress }: any) => {
   const [bookmarked, setBookmarked] = useState(false);
   const scaleValue = useRef(new Animated.Value(1)).current;
   const handlePressIn = () => {
@@ -25,7 +25,7 @@ const JobCard = ({ id,title, location, salary, phonedata }: any) => {
   return (
     <Link href={`/job/${id}`} asChild>
       
-      <TouchableOpacity
+      <TouchableOpacity onPress={onPress}
       activeOpacity={0.9}
         onPressIn={handlePressIn}
         onPressOut={handlePressOut}
