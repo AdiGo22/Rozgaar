@@ -52,7 +52,7 @@ const _layout = () => {
       }}>
       
       <Tabs.Screen
-        name="jobs"
+        name="index"
         options={{
           headerShown: false,
           tabBarIcon: ({ focused }) => (
