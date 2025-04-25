@@ -54,6 +54,7 @@ const Index = () => {
             keyExtractor={(item, index) => item.id?.toString() || index.toString()}
             renderItem={({ item }) => (
               <JobCard
+                id = {item?.id}
                 title={item?.title}
                 location={item.primary_details?.Place}
                 salary={item.primary_details?.Salary}

@@ -34,7 +34,7 @@ const _layout = () => {
           alignItems: 'center',
         },
         tabBarStyle: {
-          backgroundColor: '#F5F2FF', // softer lavender
+          backgroundColor: '#f4f2ff', // softer lavender
           borderRadius: 25,
           marginHorizontal: 20,
           marginBottom: 20,
