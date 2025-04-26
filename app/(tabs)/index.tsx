@@ -14,85 +14,143 @@ const Index = () => {
     const[hasMore,setHasMore] = useState(true);
     const[isLoading,setIsLoading] = useState(false);
     const[error,setError] = useState<string | null>(null);
+    const [bookmarks, setBookmarks] = useState<Record<string, boolean>>({});
 
     const loadJobs =async(pageNumber: number) => {
-        try { 
-            setIsLoading(true);
+    try {
+      setIsLoading(true);
             const newJobs = await fetchJobs({page : pageNumber});
-            if(newJobs.length == 0 ) { 
+            if(newJobs.length === 0 ) { 
                 setHasMore(false); //if no more jobs preset 
             }else { 
                 setJobs(prev => [...prev , ...newJobs]); //continue filling the jobs
                 setPage(pageNumber+1);
-            }
+      }
         }
        catch(e) {
-            setError(e.message);
+      setError(e.message);
        }
        finally {
-        setIsLoading(false);
-       }
+      setIsLoading(false);
+    }
     }
 
-    useEffect(() => {
-        loadJobs(1);
+  useEffect(() => {
+    loadJobs(1);
     },[]);
 
-    const renderFooter = () => {
-        if(!isLoading) return null;
-        return(<ActivityIndicator style = {{marginVertical: 20}} />);
-    }
-
-    const handleEndReached = () => {
-        if(!isLoading && hasMore) { 
-            loadJobs(page);
-        }
-    }
-
-    
-      //identify the item of the particular card pressed.
-      //saving that item to the local storage.
-    const handleCardPressed = async (item: any) => {
+  useEffect(() => {
+    const loadBookmarks = async () => {
       try {
-        // Save ENTIRE item object with unique key
-        await AsyncStorage.setItem(
-          `@JobCard_${item.id}`, 
-          JSON.stringify(item)
-        );
-       
-        router.push(`/job/${item.id}`);
+        const saved = await AsyncStorage.getItem('@Bookmarks');
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          const cleanBookmarks = Object.keys(parsed).reduce((acc, key) => {
+            if (key !== 'undefined') acc[key] = parsed[key];
+            return acc;
+          }, {});
+          setBookmarks(cleanBookmarks);
+        }
       } catch (e) {
-        console.error("Saving failed:", e);
+        console.error('Failed loading bookmarks:', e);
       }
     };
-    return (
-        <View style={{ flex: 1 }}>
-          <Text>Rozgaar</Text>
-          {error && <Text className="text-red-500">Something went wrong!</Text>}
-    
-          <FlatList
-            data={jobs}
-            keyExtractor={(item, index) => item.id?.toString() || index.toString()}
-            renderItem={({ item }) => {
-           
-              return (
-                <JobCard
-                  {...item}
+    loadBookmarks();
+  }, []);
+
+  const toggleBookmark = async (item: any) => {
+    if (!item?.id) return;
+
+    setBookmarks(prev => {
+      const newBookmarks = {
+        ...prev,
+        [item.id]: !prev[item.id]
+      };
+
+      AsyncStorage.setItem('@Bookmarks', JSON.stringify(newBookmarks));
+      if (newBookmarks[item.id]) {
+        AsyncStorage.setItem(`@BookmarkedJob_${item.id}`, JSON.stringify(item));
+      } else {
+        AsyncStorage.removeItem(`@BookmarkedJob_${item.id}`);
+      }
+
+      return newBookmarks;
+    });
+  };
+
+  const handleEndReached = () => {
+        if(!isLoading && hasMore) { 
+      loadJobs(page);
+    }
+    }
+
+
+      //identify the item of the particular card pressed.
+      //saving that item to the local storage.
+  const handleCardPressed = async (item: any) => {
+    try {
+      const itemWithBookmark = {
+        ...item,
+        isBookmarked: bookmarks[item.id] || false
+      };
+      await AsyncStorage.setItem(
+        `@JobCard_${item.id}`,
+        JSON.stringify(itemWithBookmark)
+      );
+      router.push(`/job/${item.id}`);
+    } catch (e) {
+      console.error("Saving failed:", e);
+    }
+  };
+
+  return (
+    <View className="flex-1 bg-gray-50">
+      <View className="bg-purple-800 px-4 py-3 shadow-md rounded-b-xl">
+        <Text className="text-3xl font-bold text-center text-white">
+          Rozgaar
+        </Text>
+        <Text className="text-sm text-center text-purple-200 mt-1">
+        Your Local Job Buddy!
+        </Text>
+      </View>
+      {error && (
+        <View className="bg-red-100 mx-4 p-3 rounded-lg mt-4">
+          <Text className="text-red-800 font-semibold text-center">
+            Something went wrong: {error}
+          </Text>
+        </View>
+      )}
+
+      <FlatList
+        data={jobs}
+        keyExtractor={(item) => item.id?.toString()}
+        renderItem={({ item }) => (
+          <View className="mx-4 my-2">
+            <JobCard
+              {...item}
                   id = {item?.id}
                   title={item?.title}
-                  location={item.primary_details?.Place}
-                  salary={item.primary_details?.Salary}
-                  phonedata={item?.custom_link}
-                  onPress = {() => handleCardPressed(item)}
-                />
-              );
-            }}
-            onEndReached={handleEndReached}
-            onEndReachedThreshold={0.5}
-            ListFooterComponent={renderFooter}
-          />
-        </View>
-      );
+              location={item.primary_details?.Place}
+              salary={item.primary_details?.Salary}
+              phonedata={item.custom_link}
+              onPress={() => handleCardPressed(item)}
+              isBookmarked={bookmarks[item.id] || false}
+              onBookmarkPress={() => toggleBookmark(item)}      
+                          />
+          </View>
+        )}
+        onEndReached={handleEndReached}
+        onEndReachedThreshold={0.5}
+        ListFooterComponent={
+          isLoading ? (
+            <ActivityIndicator size="large" className="my-4" color="#4C1D95" />
+          ) : null
+        }
+        ItemSeparatorComponent={() => <View className="h-2" />}
+        contentContainerClassName="pb-4"
+      />
+    </View>
+  );
 };
 
 export default Index;
