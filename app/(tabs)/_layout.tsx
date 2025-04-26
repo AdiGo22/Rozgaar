@@ -8,13 +8,13 @@ const TabIcon = ({ focused, icon }: any) => {
         focused ? 'bg-white shadow-lg' : ''
       }`}
       style={{
-        width: focused ? 50 : 40,
-        height: focused ? 50 : 40,
+        width: focused ? 40 : 30,
+        height: focused ? 40 : 30,
       }}>
-        <Image
+        <Image className="font-extrabold"
           source={icon}
           style={{ 
-            tintColor: focused ? '#5E4E9B' : '#A8B5DB',
+            tintColor: focused ? '#5E4E9B' : '#7103a8',
             width: focused ? 24 : 20,
             height: focused ? 24 : 20,
           }}
@@ -34,11 +34,11 @@ const _layout = () => {
           alignItems: 'center',
         },
         tabBarStyle: {
-          backgroundColor: '#f4f2ff', // softer lavender
+          backgroundColor: '#c5beed',
           borderRadius: 25,
           marginHorizontal: 20,
           marginBottom: 20,
-          height: 70,
+          height: 60,
           position: 'absolute',
           shadowColor: '#5E4E9B',
           shadowOpacity: 0.1,
