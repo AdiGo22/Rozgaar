@@ -121,34 +121,42 @@ const Index = () => {
         </View>
       )}
 
-      <FlatList
-        data={jobs}
-        keyExtractor={(item) => item.id?.toString()}
-        renderItem={({ item }) => (
-          <View className="mx-4 my-2">
-            <JobCard
-              {...item}
-                  id = {item?.id}
-                  title={item?.title}
-              location={item.primary_details?.Place}
-              salary={item.primary_details?.Salary}
-              phonedata={item.custom_link}
-              onPress={() => handleCardPressed(item)}
-              isBookmarked={bookmarks[item.id] || false}
-              onBookmarkPress={() => toggleBookmark(item)}      
-                          />
-          </View>
-        )}
-        onEndReached={handleEndReached}
-        onEndReachedThreshold={0.5}
-        ListFooterComponent={
-          isLoading ? (
-            <ActivityIndicator size="large" className="my-4" color="#4C1D95" />
-          ) : null
-        }
-        ItemSeparatorComponent={() => <View className="h-2" />}
-        contentContainerClassName="pb-4"
+<FlatList
+  data={
+    jobs
+      ?.filter(item => item?.id !== undefined) // Remove undefined id jobs
+      ?.filter((item, index, self) => 
+        index === self.findIndex(t => t.id === item.id)
+      ) //Remove duplicate jobs
+  }
+  keyExtractor={(item, index) => `${item.id}-${index}`}
+  renderItem={({ item }) => (
+    <View className="mx-4 my-2">
+      <JobCard
+        {...item}
+        id={item?.id}
+        title={item?.title}
+        location={item.primary_details?.Place}
+        salary={item.primary_details?.Salary}
+        phonedata={item.custom_link}
+        onPress={() => handleCardPressed(item)}
+        isBookmarked={bookmarks[item.id] || false}
+        onBookmarkPress={() => toggleBookmark(item)}
       />
+    </View>
+  )}
+  onEndReached={handleEndReached}
+  onEndReachedThreshold={0.5}
+  ListFooterComponent={
+    isLoading ? (
+      <ActivityIndicator size="large" className="my-4" color="#4C1D95" />
+    ) : null
+  }
+  ItemSeparatorComponent={() => <View className="h-2" />}
+  contentContainerClassName="pb-4"
+/>
+
+
     </View>
   );
 };
