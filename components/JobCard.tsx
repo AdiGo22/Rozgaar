@@ -89,23 +89,22 @@ const JobCard = ({ id, title, location, salary, phonedata, onPress, isBookmarked
               </Text>
             </View>
 
-            {/* Bookmark (with Text) */}
             <TouchableOpacity 
               onPress={onBookmarkPress}
-              style={{ flexDirection: 'row', alignItems: 'center', marginTop: 8 }}
+              style={{ flexDirection:'row',alignItems:'center',marginTop: 8 }}
             >
               <MaterialCommunityIcons
-                name={isBookmarked ? 'bookmark-check' : 'bookmark-plus-outline'}
+                name={isBookmarked ?'bookmark-check' :'bookmark-plus-outline'}
                 size={24}
-                color={isBookmarked ? '#10B981' : '#4C1D95'}
+                color={isBookmarked ?'#10B981' :'#4C1D95'}
               />
               <Text style={{
                 marginLeft: 10,
-                color: isBookmarked ? '#10B981' : '#4C1D95',
+                color: isBookmarked ?'#10B981' :'#4C1D95',
                 fontSize: 15,
                 fontWeight: '600'
               }}>
-                {isBookmarked ? 'Saved' : 'Save Job'}
+                {isBookmarked ?'Saved' :'Save Job'}
               </Text>
             </TouchableOpacity>
 
